@@ -12,6 +12,7 @@ class InstaBot:
 
     def __init__(self):
         self.api = InstagramAPI("your_username", "your_password")
+        self.api.USER_AGENT = 'Instagram 10.34.0 Android (18/4.3; 320dpi; 720x1280; Huawei; P30; armani; qcom; en_US)'
 
     def get_likes_list(self,username):
         api = self.api
