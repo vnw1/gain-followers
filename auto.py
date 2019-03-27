@@ -65,7 +65,47 @@ class InstaBot:
                 print('Unfollowing @' + user['username'])
                 api.unfollow(user['pk'])
                 # set this really long to avoid from suspension
-                sleep(20) 
+                sleep(20)
+
+    def get_my_profile_details(self):
+        api = self.api
+        api.login() 
+        api.getSelfUsernameInfo()
+        result = api.LastJson
+        username = result['user']['username']
+        full_name = result['user']['full_name']
+        profile_pic_url = result['user']['profile_pic_url']
+        followers = result['user']['follower_count']
+        following = result['user']['following_count']
+        media_count = result['user']['media_count']
+        df_profile = pd.DataFrame(
+            {'username':username,
+            'full name': full_name,
+            'profile picture URL':profile_pic_url,
+            'followers':followers,
+            'following':following,
+            'media count': media_count,
+            }, index=[0])
+        df_profile.to_csv('profile.csv', sep='\t', encoding='utf-8')
+
+    def get_my_feed(self):
+        api = self.api
+        image_urls = []
+        api.login()
+        api.getSelfUserFeed()
+        result = api.LastJson
+        # formatted_json_str = pprint.pformat(result)
+        # print(formatted_json_str)
+        if 'items' in result.keys():
+            for item in result['items'][0:5]:
+                if 'image_versions2' in item.keys():
+                    image_url = item['image_versions2']['candidates'][1]['url']
+                    image_urls.append(image_url)
+
+        df_feed = pd.DataFrame({
+                    'image URL':image_urls
+                })
+        df_feed.to_csv('feed.csv', sep='\t', encoding='utf-8')
 
 
 bot =  InstaBot()
